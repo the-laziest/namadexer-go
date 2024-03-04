@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "github.com/the-laziest/namadexer-go/internal/types/proto";
+
+import "google/protobuf/timestamp.proto";
+
+message Tx {
+  bytes data = 1;
+}
