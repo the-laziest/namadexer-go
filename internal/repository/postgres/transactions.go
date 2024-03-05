@@ -142,7 +142,7 @@ func (p *postgres) GetVoteProposalDatas(ctx context.Context, voteCode []byte, pr
 		From(transactionsTable).
 		Join(blocksTable+" USING (block_id)").
 		Where(sq.Eq{"code": voteCode}).
-		Where(sq.Eq{"data->>'id'::int": proposalID}).
+		Where(sq.Eq{"(data->>'id')::int": proposalID}).
 		OrderBy("header_height DESC", "pos_in_block DESC").
 		ToSql()
 	if err != nil {
