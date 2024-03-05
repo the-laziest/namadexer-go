@@ -32,6 +32,9 @@ func (s *Server) blockByHash(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) lastBlock(w http.ResponseWriter, r *http.Request) {
 	num, offset := s.getQueryInt64(r, "num"), s.getQueryInt64(r, "offset")
+	if num <= 0 {
+		num = 1
+	}
 
 	blocks, err := s.service.GetLatestBlocks(r.Context(), num, offset)
 	if err != nil {

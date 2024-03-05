@@ -88,7 +88,7 @@ func (s *service) GetBlockByHash(ctx context.Context, hash string) (BlockInfo, e
 }
 
 func (s *service) GetLatestBlocks(ctx context.Context, limit, offset int64) ([]BlockInfo, error) {
-	if limit < 0 {
+	if limit <= 0 {
 		limit = 1
 	}
 	if offset < 0 {
