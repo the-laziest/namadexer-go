@@ -75,6 +75,9 @@ func (p *postgres) GetTxsBy(ctx context.Context, filter repository.TxFilter) ([]
 	if filter.Memo != "" {
 		builder = builder.Where(sq.Eq{"memo": filter.Memo})
 	}
+	if filter.TxType != "" {
+		builder = builder.Where(sq.Eq{"tx_type": filter.TxType})
+	}
 	if filter.Limit != 0 {
 		builder = builder.Limit(filter.Limit)
 	}

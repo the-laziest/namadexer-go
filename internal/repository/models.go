@@ -52,6 +52,7 @@ type TxFilter struct {
 	Hashes  [][]byte
 	BlockID []byte
 	Memo    string
+	TxType  string
 	Offset  uint64
 	Limit   uint64
 }

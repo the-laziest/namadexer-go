@@ -87,7 +87,7 @@ func (s *service) GetTotalTxsByMemo(ctx context.Context, memo string) (Total, er
 func (s *service) GetTxsByMemo(ctx context.Context, memo string, rLimit, rOffset int64) ([]TxShort, error) {
 	limit, offset := prepareLimitAndOffset(rLimit, rOffset)
 
-	txs, err := s.repo.GetTxsBy(ctx, repository.TxFilter{Memo: memo, Limit: limit, Offset: offset})
+	txs, err := s.repo.GetTxsBy(ctx, repository.TxFilter{Memo: memo, TxType: "Decrypted", Limit: limit, Offset: offset})
 	if err != nil {
 		return nil, err
 	}
