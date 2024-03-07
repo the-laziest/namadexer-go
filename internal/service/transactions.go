@@ -80,7 +80,7 @@ func (s *service) GetTxsByHashes(ctx context.Context, hashes ...string) ([]TxInf
 }
 
 func (s *service) GetTotalTxsByMemo(ctx context.Context, memo string) (Total, error) {
-	total, err := s.repo.GetTotalTxsBy(ctx, repository.TxFilter{Memo: memo})
+	total, err := s.repo.GetTotalTxsBy(ctx, repository.TxFilter{Memo: memo, TxType: "Decrypted"})
 	return Total{total}, err
 }
 
