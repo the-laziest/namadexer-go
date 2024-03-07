@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/lib/pq"
@@ -80,59 +79,69 @@ func (p *postgres) GetAccountTxs(ctx context.Context, address []byte, limit, off
 	return txHashes, nil
 }
 
-func (p *postgres) GetAccountThresholds(ctx context.Context, updateAccountCode []byte, accountID string) ([]uint8, error) {
-	query, args, err := p.psql.Select("COALESCE(ARRAY_AGG(data->>'threshold' ORDER BY data->>'addr' ASC), ARRAY[]::integer[])").
+func (p *postgres) GetAccountThresholds(ctx context.Context, updateAccountCode []byte, accountID string) ([]*uint8, error) {
+	query, args, err := p.psql.Select("data->>'threshold'").
 		From(transactionsTable).
 		Where(sq.Eq{"code": updateAccountCode}).
-		Where(sq.Eq{"data->>'addr'": accountID}).
-		GroupBy("data->>'addr'").
+		Where(sq.Eq{"data->>'address'": accountID}).
 		ToSql()
 	if err != nil {
 		return nil, errors.New(err, "Build SQL for GetAccountThresholds")
 	}
 
-	var thresholds []uint8
-
-	err = p.exec.QueryRowContext(ctx, query, args...).Scan(pq.Array(&thresholds))
-	if err == sql.ErrNoRows {
-		return nil, repository.ErrNotFound
-	}
+	rows, err := p.exec.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.New(err, "Exec SQL for GetAccountThresholds")
+	}
+	defer rows.Close()
+
+	var thresholds []*uint8
+
+	for rows.Next() {
+		var threshold *uint8
+		if err = rows.Scan(&threshold); err != nil {
+			return nil, errors.New(err, "Scan rows for GetAccountThresholds")
+		}
+		thresholds = append(thresholds, threshold)
 	}
 
 	return thresholds, nil
 }
 
-func (p *postgres) GetAccountVPCodes(ctx context.Context, updateAccountCode []byte, accountID string) ([]string, error) {
-	query, args, err := p.psql.Select("COALESCE(ARRAY_AGG(data->>'vp_code_hash' ORDER BY data->>'addr' ASC), ARRAY[]::text[])").
+func (p *postgres) GetAccountVPCodes(ctx context.Context, updateAccountCode []byte, accountID string) ([]*string, error) {
+	query, args, err := p.psql.Select("data->>'vp_code_hash'").
 		From(transactionsTable).
 		Where(sq.Eq{"code": updateAccountCode}).
-		Where(sq.Eq{"data->>'addr'": accountID}).
-		GroupBy("data->>'addr'").
+		Where(sq.Eq{"data->>'address'": accountID}).
 		ToSql()
 	if err != nil {
 		return nil, errors.New(err, "Build SQL for GetAccountVPCodes")
 	}
 
-	var vpCodes []string
-
-	err = p.exec.QueryRowContext(ctx, query, args...).Scan(pq.Array(&vpCodes))
-	if err == sql.ErrNoRows {
-		return nil, repository.ErrNotFound
-	}
+	rows, err := p.exec.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, errors.New(err, "Exec SQL for GetAccountVPCodes")
+	}
+	defer rows.Close()
+
+	var vpCodes []*string
+
+	for rows.Next() {
+		var vpCode *string
+		if err = rows.Scan(&vpCode); err != nil {
+			return nil, errors.New(err, "Scan rows for GetAccountVPCodes")
+		}
+		vpCodes = append(vpCodes, vpCode)
 	}
 
 	return vpCodes, nil
 }
 
 func (p *postgres) GetAccountPublicKeys(ctx context.Context, updateAccountCode []byte, accountID string) ([][]string, error) {
-	query, args, err := p.psql.Select("ARRAY_AGG(data->>'public_keys')").
+	query, args, err := p.psql.Select("ARRAY(SELECT jsonb_array_elements_text(data->'public_keys'))").
 		From(transactionsTable).
 		Where(sq.Eq{"code": updateAccountCode}).
-		Where(sq.Eq{"data->>'addr'": accountID}).
+		Where(sq.Eq{"data->>'address'": accountID}).
 		ToSql()
 	if err != nil {
 		return nil, errors.New(err, "Build SQL for GetAccountPublicKeys")
@@ -148,7 +157,7 @@ func (p *postgres) GetAccountPublicKeys(ctx context.Context, updateAccountCode [
 
 	for rows.Next() {
 		var keys []string
-		if err = rows.Scan(&keys); err != nil {
+		if err = rows.Scan(pq.Array(&keys)); err != nil {
 			return nil, errors.New(err, "Scan rows for GetAccountPublicKeys")
 		}
 		publicKeys = append(publicKeys, keys)

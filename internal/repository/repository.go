@@ -24,8 +24,8 @@ type Repository interface {
 	GetTotalAccountTxs(ctx context.Context, address []byte) (uint64, error)
 	GetAccountTxs(ctx context.Context, address []byte, limit, offset uint64) ([][]byte, error)
 
-	GetAccountThresholds(ctx context.Context, updateAccountCode []byte, accountID string) ([]uint8, error)
-	GetAccountVPCodes(ctx context.Context, updateAccountCode []byte, accountID string) ([]string, error)
+	GetAccountThresholds(ctx context.Context, updateAccountCode []byte, accountID string) ([]*uint8, error)
+	GetAccountVPCodes(ctx context.Context, updateAccountCode []byte, accountID string) ([]*string, error)
 	GetAccountPublicKeys(ctx context.Context, updateAccountCode []byte, accountID string) ([][]string, error)
 
 	AddCommitSignatures(ctx context.Context, signatures ...CommitSignature) error
