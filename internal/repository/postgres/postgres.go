@@ -124,6 +124,7 @@ func (p *postgres) CreateIndexes(ctx context.Context) error {
 	txHashIndex := "CREATE INDEX IF NOT EXISTS transactions_hash_idx ON " + transactionsTable + " USING hash(hash);"
 	txMemoIndex := "CREATE INDEX IF NOT EXISTS transactions_memo_idx ON " + transactionsTable + " USING hash(memo) WHERE memo IS NOT NULL;"
 	accountTxsIndex := "CREATE INDEX IF NOT EXISTS account_transactions_address_idx ON " + accountTransactionsTable + " USING hash(address);"
+	commitSigsIndex := "CREATE INDEX IF NOT EXISTS commit_signatures_block_idx ON " + commitSignaturesTable + " USING hash(block_id);"
 
 	_, err := p.exec.ExecContext(ctx, blockPK)
 	if err != nil {
@@ -156,7 +157,12 @@ func (p *postgres) CreateIndexes(ctx context.Context) error {
 	}
 
 	_, err = p.exec.ExecContext(ctx, accountTxsIndex)
-	return errors.New(err, "Create account transactions address index")
+	if err != nil {
+		return errors.New(err, "Create account transactions address index")
+	}
+
+	_, err = p.exec.ExecContext(ctx, commitSigsIndex)
+	return errors.New(err, "Create commit signatures block index")
 }
 
 func (p *postgres) ExecContext(ctx context.Context, query string, args ...any) error {

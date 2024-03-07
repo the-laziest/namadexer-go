@@ -22,6 +22,9 @@ func (s *service) GetValidatorsUptime(ctx context.Context, validator string, sta
 			start = 1
 		}
 	}
+	if start > end {
+		return Uptime{}, ErrBadRequest
+	}
 
 	cnt, err := s.repo.GetCommitsCount(ctx, address, start, end)
 	if err == repository.ErrNotFound {
@@ -31,7 +34,7 @@ func (s *service) GetValidatorsUptime(ctx context.Context, validator string, sta
 		return Uptime{}, err
 	}
 
-	uptime := float64(cnt) / float64(end-start)
+	uptime := float64(cnt) / float64(end-start+1)
 
 	return Uptime{uptime}, nil
 }
