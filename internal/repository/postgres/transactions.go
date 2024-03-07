@@ -109,10 +109,8 @@ func (p *postgres) GetTxsBy(ctx context.Context, filter repository.TxFilter) ([]
 func (p *postgres) GetTxsBySourceOrTarget(ctx context.Context, address string) ([]repository.Transaction, error) {
 	query, args, err := p.psql.Select("hash", "block_id", "tx_type", "wrapper_id", "memo", "fee_amount_per_gas_unit", "fee_token", "gas_limit_multiplier", "code", "data", "return_code", "pos_in_block").
 		From(transactionsTable).
-		Join(blocksTable+" USING (block_id)").
 		Where(sq.Eq{"tx_type": "Decrypted"}).
 		Where(sq.Or{sq.Eq{"data ->> 'source'": address}, sq.Eq{"data ->> 'target'": address}}).
-		OrderBy("header_height DESC", "pos_in_block DESC").
 		ToSql()
 	if err != nil {
 		return nil, errors.New(err, "Build SQL for GetTxsBySourceOrTarget")

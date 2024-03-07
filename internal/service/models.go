@@ -54,11 +54,15 @@ type Uptime struct {
 
 type AccountUpdates struct {
 	AccountID  string     `json:"account_id"`
-	CodeHashes []*string   `json:"code_hashes"`
-	Thresholds []*uint8    `json:"thresholds"`
+	CodeHashes []*string  `json:"code_hashes"`
+	Thresholds []*uint8   `json:"thresholds"`
 	PublicKeys [][]string `json:"public_keys"`
 }
 
 type Total struct {
 	Total uint64 `json:"total"`
+}
+
+type ShieldedAssets struct {
+	ShieldedAssets map[string]float64 `json:"shielded_assets"`
 }

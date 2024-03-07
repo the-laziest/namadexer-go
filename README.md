@@ -3,9 +3,9 @@
 Namadexer-go is a Golang implementation of indexer for [Namada](https://github.com/anoma/namada).
 It supports all endpoints from original [namadexer](https://github.com/Zondax/namadexer) and has additional endpoints:
  - `/txs?hash=<hash-id-1>&hash=<hash-id-2>...` - fetch list of transactions by specified hashes
- - `/txs/memo/{memo}` - fetch list of transactions by specified memo with limit and offset
+ - `/txs/memo/{memo}` - fetch list of transactions by specified memo with limit and offset in query
  - `/txs/memo/{memo}/total` - total number of transactions by specified memo
- - `/account/txs/{account_id}` - fetch list of transactions associated with specified account, limit and offset
+ - `/account/txs/{account_id}` - fetch list of transactions associated with specified account and limit and offset in query
  - `/account/txs/{account_id}/total` - total number of transactions associated with specified account
 
 ## Overview

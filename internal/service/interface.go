@@ -19,7 +19,7 @@ type Service interface {
 	GetTotalTxsByMemo(ctx context.Context, memo string) (Total, error)
 	GetTotalTxsByAccount(ctx context.Context, addressHex string) (Total, error)
 
-	GetShielded(ctx context.Context) ([]TxInfo, error)
+	GetShielded(ctx context.Context) (ShieldedAssets, error)
 	GetValidatorsUptime(ctx context.Context, validator string, start, end int64) (Uptime, error)
 	GetVoteProposalData(ctx context.Context, proposalID int64) ([]json.RawMessage, error)
 	GetAccountUpdates(ctx context.Context, accountID string) (*AccountUpdates, error)

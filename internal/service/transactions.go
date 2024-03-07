@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/the-laziest/namadexer-go/internal/repository"
 )
@@ -115,20 +116,6 @@ func (s *service) GetTxsByAccount(ctx context.Context, address string, rLimit, r
 	return hashes, nil
 }
 
-func (s *service) GetShielded(ctx context.Context) ([]TxInfo, error) {
-	txs, err := s.repo.GetTxsBySourceOrTarget(ctx, MASP_ADDR)
-	if err != nil {
-		return nil, err
-	}
-
-	txInfos := make([]TxInfo, 0, len(txs))
-	for _, tx := range txs {
-		txInfos = append(txInfos, repoTxToInfo(tx))
-	}
-
-	return txInfos, nil
-}
-
 func prepareLimitAndOffset(limit, offset int64) (uint64, uint64) {
 	if limit <= 0 {
 		limit = 20
@@ -137,4 +124,48 @@ func prepareLimitAndOffset(limit, offset int64) (uint64, uint64) {
 		offset = 0
 	}
 	return uint64(limit), uint64(offset)
+}
+
+func (s *service) GetShielded(ctx context.Context) (ShieldedAssets, error) {
+	txs, err := s.repo.GetTxsBySourceOrTarget(ctx, MASP_ADDR)
+	if err != nil {
+		return ShieldedAssets{}, err
+	}
+
+	shielded := make(map[string]float64)
+
+	for _, tx := range txs {
+
+		var transfer Transfer
+		err = json.Unmarshal(tx.Data, &transfer)
+		if err != nil {
+			return ShieldedAssets{}, ErrBadRequest
+		}
+
+		maspSource := transfer.Source == MASP_ADDR
+		maspTarget := transfer.Target == MASP_ADDR
+		if (!maspSource && !maspTarget) || maspSource == maspTarget {
+			continue
+		}
+
+		amount, err := strconv.ParseFloat(transfer.Amount, 64)
+		if err != nil {
+			return ShieldedAssets{}, ErrBadRequest
+		}
+
+		if maspSource {
+			shielded[transfer.Token] -= amount
+		} else {
+			shielded[transfer.Token] += amount
+		}
+	}
+
+	return ShieldedAssets{shielded}, nil
+}
+
+type Transfer struct {
+	Source string `json:"source"`
+	Target string `json:"target"`
+	Token  string `json:"token"`
+	Amount string `json:"amount"`
 }
