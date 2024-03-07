@@ -439,11 +439,7 @@ type PublicKey struct {
 
 func (pk PublicKey) String() string {
 	bs, _ := borsh.Serialize(pk)
-	s := encodeBytes("tpknam", bs)
-	if pk.Enum == 0 {
-		return "ED25519_PK_PREFIX" + s
-	}
-	return "SECP256K1_PK_PREFIX" + s
+	return encodeBytes("tpknam", bs)
 }
 
 func (pk PublicKey) MarshalJSON() ([]byte, error) {
