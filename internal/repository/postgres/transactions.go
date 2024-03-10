@@ -65,7 +65,7 @@ func (p *postgres) GetTotalTxsBy(ctx context.Context, filter repository.TxFilter
 }
 
 func (p *postgres) GetTxsBy(ctx context.Context, filter repository.TxFilter) ([]repository.Transaction, error) {
-	builder := p.psql.Select("hash", "block_id", "tx_type", "wrapper_id", "memo", "fee_amount_per_gas_unit", "fee_token", "gas_limit_multiplier", "code", "data", "return_code", "pos_in_block").
+	builder := p.psql.Select("hash", "block_id", "tx_type", "wrapper_id", "memo", "fee_amount_per_gas_unit", "fee_token", "gas_limit_multiplier", "code", "data", "return_code", "pos_in_block", "header_height", "header_time").
 		From(transactionsTable).
 		Join(blocksTable + " USING (block_id)")
 
@@ -103,7 +103,8 @@ func (p *postgres) GetTxsBy(ctx context.Context, filter repository.TxFilter) ([]
 	for rows.Next() {
 		var tx repository.Transaction
 		if err = rows.Scan(&tx.Hash, &tx.BlockID, &tx.TxType, &tx.WrapperID, &tx.Memo,
-			&tx.FeeAmountPerGasUnit, &tx.FeeToken, &tx.GasLimitMultiplier, &tx.Code, &tx.Data, &tx.ReturnCode, &tx.PosInBlock); err != nil {
+			&tx.FeeAmountPerGasUnit, &tx.FeeToken, &tx.GasLimitMultiplier, &tx.Code, &tx.Data, &tx.ReturnCode, &tx.PosInBlock,
+			&tx.BlockHeight, &tx.BlockTime); err != nil {
 			return nil, errors.New(err, "Scan result for GetTxsBy")
 		}
 		txs = append(txs, tx)

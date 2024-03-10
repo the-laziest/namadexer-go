@@ -12,7 +12,7 @@ type Service interface {
 	GetBlockByHash(ctx context.Context, hash string) (BlockInfo, error)
 	GetLatestBlocks(ctx context.Context, limit, offset int64) ([]BlockInfo, error)
 
-	GetTxsByHashes(ctx context.Context, hash ...string) ([]TxInfo, error)
+	GetTxsByHashes(ctx context.Context, hashes ...string) ([]TxInfo, error)
 	GetTxsByMemo(ctx context.Context, memo string, limit, offset int64) ([]TxShort, error)
 	GetTxsByAccount(ctx context.Context, addressHex string, limit, offset int64) ([]Hash, error)
 

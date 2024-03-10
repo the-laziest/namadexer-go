@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/hex"
 	"encoding/json"
+	"time"
 
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -35,17 +36,24 @@ type BlockInfo struct {
 	TxHashes   []TxShort       `json:"tx_hashes"`
 }
 
+type BlockShort struct {
+	Height int64     `json:"height"`
+	Time   time.Time `json:"time"`
+}
+
 type TxInfo struct {
 	Hash                Hash             `json:"hash"`
 	BlockID             Hash             `json:"block_id"`
 	TxType              string           `json:"tx_type"`
 	WrapperID           *Hash            `json:"wrapper_id,omitempty"`
+	Memo                *string          `json:"memo,omitempty"`
 	FeeAmountPerGasUnit *string          `json:"fee_amount_per_gas_unit,omitempty"`
 	FeeToken            *string          `json:"fee_token,omitempty"`
 	GasLimitMultiplier  *uint64          `json:"gas_limit_multiplier,omitempty"`
 	Code                *Hash            `json:"code,omitempty"`
 	Data                *json.RawMessage `json:"data,omitempty"`
 	ReturnCode          *int64           `json:"return_code,omitempty"`
+	BlockInfo           *BlockShort      `json:"block_info,omitempty"`
 }
 
 type Uptime struct {

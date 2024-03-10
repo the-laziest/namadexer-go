@@ -631,13 +631,14 @@ func (t Tx) GetCodeHash() (Hash, error) {
 	return codeSection.Code.Code.GetHash(), nil
 }
 
-func (t Tx) GetMemo() (string, error) {
+func (t Tx) GetMemo() (*string, error) {
 	memeSection, err := t.GetSection(t.Header.MemoHash)
 	if err != nil {
-		return "", errors.New(err, "Get memo section")
+		return nil, errors.New(err, "Get memo section")
 	}
 	if memeSection == nil {
-		return "", nil
+		return nil, nil
 	}
-	return memeSection.ExtraData.Code.String(), nil
+	memo := memeSection.ExtraData.Code.String()
+	return &memo, nil
 }

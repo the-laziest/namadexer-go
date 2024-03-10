@@ -13,10 +13,17 @@ func repoTxToInfo(tx repository.Transaction) TxInfo {
 		Hash:    tx.Hash,
 		BlockID: tx.BlockID,
 		TxType:  tx.TxType,
+		BlockInfo: &BlockShort{
+			Height: tx.BlockHeight,
+			Time:   tx.BlockTime,
+		},
 	}
 	if len(tx.WrapperID) != 0 {
 		wrapperID := Hash(tx.WrapperID)
 		info.WrapperID = &wrapperID
+	}
+	if tx.Memo != nil {
+		info.Memo = tx.Memo
 	}
 	if len(tx.FeeAmountPerGasUnit) != 0 {
 		info.FeeAmountPerGasUnit = &tx.FeeAmountPerGasUnit

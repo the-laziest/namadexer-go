@@ -38,7 +38,7 @@ type Transaction struct {
 	BlockID             []byte
 	TxType              string
 	WrapperID           []byte
-	Memo                string
+	Memo                *string
 	FeeAmountPerGasUnit string
 	FeeToken            string
 	GasLimitMultiplier  *uint64
@@ -46,6 +46,8 @@ type Transaction struct {
 	Data                []byte
 	ReturnCode          *int64
 	PosInBlock          int64
+	BlockHeight         int64
+	BlockTime           time.Time
 }
 
 type TxFilter struct {
